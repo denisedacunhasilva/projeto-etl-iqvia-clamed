@@ -1,4 +1,5 @@
 import psycopg2 as pg
+import pandas as pd
 
 #Conexão com banco de dados
 def connect_db(dbname, user, password, port, host):
@@ -11,4 +12,4 @@ def connect_db(dbname, user, password, port, host):
             host=host
         )
     except:
-        print("Erro: Falha ao conectar com o banco de dados!\n")
+        print("Erro: Falha ao conectar com o banco de dados!")
