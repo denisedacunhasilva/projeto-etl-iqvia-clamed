@@ -23,12 +23,6 @@ def limpar_filial_brick_data_xlsx(df_filial_brick_clean: pd.DataFrame) -> pd.Dat
     # Normalizar nomes das colunas (corrige 'cód._filial' → 'cod_filial')
     df_filial_brick_clean.columns = [normalizar_coluna(col) for col in df_filial_brick_clean.columns]
 
-    # Remover duplicatas
-    df_filial_brick_clean = df_filial_brick_clean.drop_duplicates()
-
-    # Tratar valores nulos essenciais (agora as colunas EXISTEM)
-    df_filial_brick_clean = df_filial_brick_clean.dropna(subset=['brick', 'cod_filial'])
-
     # Separar coluna brick em cod_brick e nome_brick
     # Exemplo: "1234 - FLORIANÓPOLIS CENTRO"
     split_brick = (
@@ -39,6 +33,19 @@ def limpar_filial_brick_data_xlsx(df_filial_brick_clean: pd.DataFrame) -> pd.Dat
 
     df_filial_brick_clean['cod_brick'] = split_brick[0]
     df_filial_brick_clean['nome_brick'] = split_brick[1].fillna('NAO_INFORMADO')
+
+    # --------------------
+    # Remoção Duplicatas
+    # --------------------
+    
+    df_filial_brick_clean.drop_duplicates(subset=['cod_brick'], inplace=True)
+    #df_filial_brick_clean = df_filial_brick_clean.drop_duplicates(subset=['cod_brick'])
+
+
+    df_filial_brick_clean = df_filial_brick_clean.reset_index(drop=True)
+
+        # Tratar valores nulos essenciais (agora as colunas EXISTEM)
+    df_filial_brick_clean = df_filial_brick_clean.dropna(subset=['brick', 'cod_filial'])
 
     # Garantir tipos corretos
     df_filial_brick_clean['cod_filial'] = df_filial_brick_clean['cod_filial'].astype(int)
