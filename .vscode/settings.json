@@ -1,0 +1,4 @@
+{
+    "python.analysis.extraPaths": ["${workspaceFolder}/src"],
+    "python.terminal.activateEnvironment": true
+}
