@@ -1,79 +1,49 @@
-import pandas as pd #importar a biblioteca pandas que serve para manipulação de dados em dataframes
-import numpy as np  #importar a biblioteca numpy que serve para manipulação de arrays e operações numéricas
-import re           #importar a biblioteca de expressões regulares
+import pandas as pd
+import numpy as np
+import re
+import unicodedata
 
-#chatgpt
+
+def normalizar_coluna(col: str) -> str:
+    """
+    Normaliza nomes de colunas:
+    - remove acentos
+    - converte para lowercase
+    - substitui caracteres especiais por _
+    """
+    col = col.strip().lower()
+    col = unicodedata.normalize('NFKD', col).encode('ascii', 'ignore').decode('utf-8')
+    col = re.sub(r'[^a-z0-9_]+', '_', col)
+    return col
 
 
 def limpar_filial_brick_data_xlsx(df: pd.DataFrame) -> pd.DataFrame:
-# Padronizar nomes das colunas
-    df.columns = (
-    df.columns
-    .str.strip()
-    .str.lower()
-    .str.replace(' ', '_')
-                )
+    # Normalizar nomes das colunas (corrige 'cód._filial' → 'cod_filial')
+    df.columns = [normalizar_coluna(col) for col in df.columns]
 
-
-# Remover duplicatas
-df = df.drop_duplicates()
-
-
-# Tratar valores nulos essenciais
-df = df.dropna(subset=['cod_filial', 'brick'])
-
-
-# Separar coluna brick em cod_brick e nome_brick
-# Exemplo: "1234 - FLORIANÓPOLIS CENTRO"
-df[['cod_brick', 'nome_brick']] = df['brick'].str.split(' - ', n=1, expand=True)
-
-
-# Garantir tipos corretos
-df['cod_filial'] = df['cod_filial'].astype(int)
-df['cod_brick'] = df['cod_brick'].astype(str)
-df['nome_brick'] = df['nome_brick'].astype(str)
-
-
-# Remover coluna original brick (não normalizada)
-df = df.drop(columns=['brick'])
-
-
-return df
-
-
-'''
-def limpar_filial_brick_data_xlsx(df: pd.DataFrame) -> pd.DataFrame:
-    df.columns = (
-        df.columns
-        .str.strip()
-        .str.lower()
-        .str.replace(" ", "_")
-        .str.replace(r"[^\w_]", "", regex=True)
-    )
-
+    # Remover duplicatas
     df = df.drop_duplicates()
 
+    # Tratar valores nulos essenciais (agora as colunas EXISTEM)
+    df = df.dropna(subset=['brick', 'cod_filial'])
+
+    # Separar coluna brick em cod_brick e nome_brick
+    # Exemplo: "1234 - FLORIANÓPOLIS CENTRO"
+    split_brick = (
+        df['brick']
+        .astype(str)
+        .str.split(' - ', n=1, expand=True)
+    )
+
+    df['cod_brick'] = split_brick[0]
+    df['nome_brick'] = split_brick[1].fillna('NAO_INFORMADO')
+
+    # Garantir tipos corretos
+    df['cod_filial'] = df['cod_filial'].astype(int)
+    df['cod_brick'] = df['cod_brick'].astype(str)
+    df['nome_brick'] = df['nome_brick'].astype(str)
+
+    # Remover coluna original brick (não normalizada)
+    df = df.drop(columns=['brick'])
+
     return df
-
-    '''
-
-'''
-def limpar_filial_brick_data_xlsx(df: pd.DataFrame):
-    df = df.copy()
-
-    # --------------------
-    # Tratamento nome
-    # --------------------
-    def limpar_nome(nome):
-        if pd.isna(nome) or nome.strip() == "":
-            return np.nan
-        
-        nome = nome.strip()
-        nome = re.sub(r'\s+', ' ', nome)
-        nome = nome.title()
-        return nome
-
-    df_clean['nome'] = df_clean['nome'].apply(limpar_nome)
-    df_clean.fillna({'nome': 'Não Informado'}, inplace=True)
-
-'''
