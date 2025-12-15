@@ -9,7 +9,7 @@ from load import *
 
 def pipeline_bricks_e_filiais():
     #1. Extract
-    df_filial_brick = extract_filial_brick_data_xlsx('../../data/raw/filial-brick_sample.xlsx')
+    df_filial_brick = extrair_filial_brick_data_xlsx('../../data/raw/filial-brick_sample.xlsx')
     print('Coleta de filiais por brick efetuada com sucesso!')
 
     #2. Transform
