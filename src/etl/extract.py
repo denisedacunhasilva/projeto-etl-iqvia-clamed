@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 from src.database import connect_db
 
-
-def extract_filial_brick_data_xlsx(path: str) -> pd.DataFrame:
+def extrair_filial_brick_data_xlsx(path: str) -> pd.DataFrame:
     df = pd.read_excel(path, dtype = {
         'filial_brick_id': int,
         'filial_id': int,
@@ -12,8 +11,7 @@ def extract_filial_brick_data_xlsx(path: str) -> pd.DataFrame:
         'ativo': bool
     })
 
-    #return df
-    print (df)
+    return df
 
 
 
