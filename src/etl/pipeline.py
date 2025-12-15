@@ -15,10 +15,9 @@ def pipeline_bricks_e_filiais():
     #2. Transform
     df_filial_brick_clean = limpar_filial_brick_data_xlsx(df_filial_brick)
     print('Transformação concluída com sucesso!')
-    print(df_filial_brick_clean.head())
     #3. Load
-    #carregar_bricks_e_filiais(df_filial_brick_clean)
-    #print('Carga concluída com sucesso!')
+    carregar_bricks_e_filiais(df_filial_brick_clean)
+    print('Carga concluída com sucesso!')
 
 if __name__ == "__main__":
     pipeline_bricks_e_filiais()
