@@ -2,55 +2,17 @@ import pandas as pd #importar a biblioteca pandas que serve para manipulação d
 import numpy as np  #importar a biblioteca numpy que serve para manipulação de arrays e operações numéricas
 import re           #importar a biblioteca de expressões regulares
 
-'''
+#chatgpt
+
+
 def limpar_filial_brick_data_xlsx(df: pd.DataFrame) -> pd.DataFrame:
-    df.columns = (
-        df.columns
-        .str.strip()
-        .str.lower()
-        .str.replace(" ", "_")
-        .str.replace(r"[^\w_]", "", regex=True)
-    )
-
-    df = df.drop_duplicates()
-
-    return df
-
-    '''
-
-def limpar_filial_brick_data_xlsx(df: pd.DataFrame):
-    df = df.copy()
-
-    # --------------------
-    # Tratamento nome
-    # --------------------
-    def limpar_nome(nome):
-        if pd.isna(nome) or nome.strip() == "":
-            return np.nan
-        
-        nome = nome.strip()
-        nome = re.sub(r'\s+', ' ', nome)
-        nome = nome.title()
-        return nome
-
-    df_clean['nome'] = df_clean['nome'].apply(limpar_nome)
-    df_clean.fillna({'nome': 'Não Informado'}, inplace=True)
-
-
-
-    #chatgpt
-'''
-    import pandas as pd
-
-
-def transform_filial_brick(df: pd.DataFrame) -> pd.DataFrame:
 # Padronizar nomes das colunas
-df.columns = (
-df.columns
-.str.strip()
-.str.lower()
-.str.replace(' ', '_')
-)
+    df.columns = (
+    df.columns
+    .str.strip()
+    .str.lower()
+    .str.replace(' ', '_')
+                )
 
 
 # Remover duplicatas
@@ -76,4 +38,42 @@ df['nome_brick'] = df['nome_brick'].astype(str)
 df = df.drop(columns=['brick'])
 
 
-return df'''
+return df
+
+
+'''
+def limpar_filial_brick_data_xlsx(df: pd.DataFrame) -> pd.DataFrame:
+    df.columns = (
+        df.columns
+        .str.strip()
+        .str.lower()
+        .str.replace(" ", "_")
+        .str.replace(r"[^\w_]", "", regex=True)
+    )
+
+    df = df.drop_duplicates()
+
+    return df
+
+    '''
+
+'''
+def limpar_filial_brick_data_xlsx(df: pd.DataFrame):
+    df = df.copy()
+
+    # --------------------
+    # Tratamento nome
+    # --------------------
+    def limpar_nome(nome):
+        if pd.isna(nome) or nome.strip() == "":
+            return np.nan
+        
+        nome = nome.strip()
+        nome = re.sub(r'\s+', ' ', nome)
+        nome = nome.title()
+        return nome
+
+    df_clean['nome'] = df_clean['nome'].apply(limpar_nome)
+    df_clean.fillna({'nome': 'Não Informado'}, inplace=True)
+
+'''
