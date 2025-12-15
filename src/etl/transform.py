@@ -2,7 +2,9 @@ import pandas as pd
 import numpy as np
 import re
 import unicodedata
-
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../../')))
 
 def normalizar_coluna(col: str) -> str:
     """
@@ -17,33 +19,33 @@ def normalizar_coluna(col: str) -> str:
     return col
 
 
-def limpar_filial_brick_data_xlsx(df: pd.DataFrame) -> pd.DataFrame:
+def limpar_filial_brick_data_xlsx(df_filial_brick_clean: pd.DataFrame) -> pd.DataFrame:
     # Normalizar nomes das colunas (corrige 'cód._filial' → 'cod_filial')
-    df.columns = [normalizar_coluna(col) for col in df.columns]
+    df_filial_brick_clean.columns = [normalizar_coluna(col) for col in df_filial_brick_clean.columns]
 
     # Remover duplicatas
-    df = df.drop_duplicates()
+    df_filial_brick_clean = df_filial_brick_clean.drop_duplicates()
 
     # Tratar valores nulos essenciais (agora as colunas EXISTEM)
-    df = df.dropna(subset=['brick', 'cod_filial'])
+    df_filial_brick_clean = df_filial_brick_clean.dropna(subset=['brick', 'cod_filial'])
 
     # Separar coluna brick em cod_brick e nome_brick
     # Exemplo: "1234 - FLORIANÓPOLIS CENTRO"
     split_brick = (
-        df['brick']
+        df_filial_brick_clean['brick']
         .astype(str)
         .str.split(' - ', n=1, expand=True)
     )
 
-    df['cod_brick'] = split_brick[0]
-    df['nome_brick'] = split_brick[1].fillna('NAO_INFORMADO')
+    df_filial_brick_clean['cod_brick'] = split_brick[0]
+    df_filial_brick_clean['nome_brick'] = split_brick[1].fillna('NAO_INFORMADO')
 
     # Garantir tipos corretos
-    df['cod_filial'] = df['cod_filial'].astype(int)
-    df['cod_brick'] = df['cod_brick'].astype(str)
-    df['nome_brick'] = df['nome_brick'].astype(str)
+    df_filial_brick_clean['cod_filial'] = df_filial_brick_clean['cod_filial'].astype(int)
+    df_filial_brick_clean['cod_brick'] = df_filial_brick_clean['cod_brick'].astype(str)
+    df_filial_brick_clean['nome_brick'] = df_filial_brick_clean['nome_brick'].astype(str)
 
     # Remover coluna original brick (não normalizada)
-    df = df.drop(columns=['brick'])
+    df_filial_brick_clean = df_filial_brick_clean.drop(columns=['brick'])
 
-    return df
+    return df_filial_brick_clean
