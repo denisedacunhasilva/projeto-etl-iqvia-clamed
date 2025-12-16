@@ -3,21 +3,29 @@ import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '../../')))
 
-from extract import *
-from transform import *
-from load import *
+from extract import extrair_filial_brick_data_xlsx
+from transform import limpar_filial_brick_data_xlsx
+from load import (
+    carregar_bricks,
+    carregar_filiais,
+    carregar_filial_brick
+)
 
 def pipeline_bricks_e_filiais():
-    #1. Extract
-    df_filial_brick = extrair_filial_brick_data_xlsx('../../data/raw/filial-brick_sample.xlsx')
-    print('Coleta de filiais por brick efetuada com sucesso!')
+    df_raw = extrair_filial_brick_data_xlsx(
+        '../../data/raw/filial-brick_sample.xlsx'
+    )
 
-    #2. Transform
-    df_filial_brick_clean = limpar_filial_brick_data_xlsx(df_filial_brick)
-    print('Transformação concluída com sucesso!')
-    #3. Load
-    carregar_bricks_e_filiais(df_filial_brick_clean)
-    print('Carga concluída com sucesso!')
+    df_clean = limpar_filial_brick_data_xlsx(df_raw)
+
+    carregar_bricks(df_clean)
+    print('✔ Dimensão BRICK carregada')
+
+    carregar_filiais(df_clean)
+    print('✔ Dimensão FILIAL carregada')
+
+    carregar_filial_brick(df_clean)
+    print('✔ Dimensão FILIAL_BRICK carregada')
 
 if __name__ == "__main__":
     pipeline_bricks_e_filiais()
