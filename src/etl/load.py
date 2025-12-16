@@ -16,7 +16,8 @@ from database import (
     buscar_empresa_id_por_codigo,
     buscar_endereco_nao_informado,
     buscar_filial_id_por_codigo,
-    buscar_brick_id_por_codigo
+    buscar_brick_id_por_codigo,
+    cadastrar_fact_vendas_iqvia
 )
 
 # =========================================================
@@ -64,15 +65,49 @@ def carregar_filiais(df: pd.DataFrame):
 
 def carregar_filial_brick(df: pd.DataFrame):
     df_rel = (
-        df[['cod_filial', 'cod_brick']]
+        df[['cod_filial', 'nome_filial', 'cod_brick']]
         .drop_duplicates()
     )
 
-    for _, row in df_rel.iterrows():
-        filial_id = buscar_filial_id_por_codigo(int(row['cod_filial']))
-        brick_id = buscar_brick_id_por_codigo(row['cod_brick'])
+    empresa_id = buscar_empresa_id_por_codigo(1)
+    endereco_id = buscar_endereco_nao_informado()
 
+    for _, row in df_rel.iterrows():
+        cod_filial = int(row['cod_filial'])
+        cod_brick = int(row['cod_brick'])
+
+        # -------------------------
+        # GARANTIR DIM_FILIAL
+        # -------------------------
+        try:
+            filial_id = buscar_filial_id_por_codigo(cod_filial)
+        except ValueError:
+            cadastrar_dim_filial(
+                cod_filial=cod_filial,
+                nome_filial=row['nome_filial'],
+                empresa_id=empresa_id,
+                endereco_id=endereco_id,
+                tipo_filial='FILIAL',
+                status_operacao='ATIVA'
+            )
+            filial_id = buscar_filial_id_por_codigo(cod_filial)
+
+        # -------------------------
+        # GARANTIR DIM_BRICK
+        # -------------------------
+        brick_id = buscar_brick_id_por_codigo(cod_brick)
+
+        # -------------------------
+        # INSERIR RELAÇÃO
+        # -------------------------
         cadastrar_dim_filial_brick(
             filial_id=filial_id,
             brick_id=brick_id
         )
+
+# =========================================================
+# LOAD FACT_VENDAS_IQVIA
+# =========================================================
+def carregar_fact_vendas_iqvia(df: pd.DataFrame):
+    for _, row in df.iterrows():
+        cadastrar_fact_vendas_iqvia(row)
