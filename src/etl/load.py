@@ -64,45 +64,41 @@ def carregar_filiais(df: pd.DataFrame):
 # =========================================================
 
 def carregar_filial_brick(df: pd.DataFrame):
-    df_rel = (
-        df[['cod_filial', 'nome_filial', 'cod_brick']]
-        .drop_duplicates()
-    )
+    for _, row in df.iterrows():
 
-    empresa_id = buscar_empresa_id_por_codigo(1)
-    endereco_id = buscar_endereco_nao_informado()
-
-    for _, row in df_rel.iterrows():
         cod_filial = int(row['cod_filial'])
         cod_brick = int(row['cod_brick'])
 
-        # -------------------------
-        # GARANTIR DIM_FILIAL
-        # -------------------------
         try:
             filial_id = buscar_filial_id_por_codigo(cod_filial)
-        except ValueError:
-            cadastrar_dim_filial(
-                cod_filial=cod_filial,
-                nome_filial=row['nome_filial'],
-                empresa_id=empresa_id,
-                endereco_id=endereco_id,
-                tipo_filial='FILIAL',
-                status_operacao='ATIVA'
+            brick_id = buscar_brick_id_por_codigo(cod_brick)
+
+            cadastrar_dim_filial_brick(
+                filial_id=filial_id,
+                brick_id=brick_id
             )
-            filial_id = buscar_filial_id_por_codigo(cod_filial)
 
-        # -------------------------
-        # GARANTIR DIM_BRICK
-        # -------------------------
-        brick_id = buscar_brick_id_por_codigo(cod_brick)
+        except ValueError as e:
+            print(f'Relacionamento ignorado: {e}')
+# -------------------------
+# GARANTIR DIM_BRICK
+# -------------------------
+    try:
+        brick_id = buscar_brick_id_por_codigo(int(cod_brick))
+        filial_id = buscar_filial_id_por_codigo(int(cod_filial))
 
-        # -------------------------
-        # INSERIR RELAÇÃO
-        # -------------------------
-        cadastrar_dim_filial_brick(
-            filial_id=filial_id,
-            brick_id=brick_id
+        cadastrar_dim_filial_brick(filial_id, brick_id)
+
+    except ValueError as e:
+        # Brick ou filial inexistente → ignora relacionamento
+        print(f'Relacionamento ignorado: {e}')
+
+# -------------------------
+# INSERIR RELAÇÃO
+# -------------------------
+    cadastrar_dim_filial_brick(
+        filial_id=filial_id,
+        brick_id=brick_id
         )
 
 # =========================================================
