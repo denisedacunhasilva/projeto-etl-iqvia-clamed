@@ -1,3 +1,4 @@
-data/
-# Ignorar ambiente virtual Python
+__pycache__/
+*.pyc
+.env
 venv/
